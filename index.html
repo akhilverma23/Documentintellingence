@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document Intelligence UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eef4ff, #f7f9fc);
+            color: #1f2937;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #0f172a;
+            color: #fff;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #cbd5e1;
+            padding: 12px 14px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #1e293b;
+            color: #fff;
+        }
+
+        .main {
+            flex: 1;
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .topbar h1 {
+            font-size: 30px;
+            color: #0f172a;
+        }
+
+        .topbar p {
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .user-chip {
+            background: #fff;
+            padding: 12px 18px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        .upload-box {
+            border: 2px dashed #93c5fd;
+            border-radius: 18px;
+            padding: 32px;
+            text-align: center;
+            background: #f8fbff;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-box.dragover {
+            background: #e0f2fe;
+            border-color: #2563eb;
+            transform: scale(1.01);
+        }
+
+        .upload-box h2 {
+            margin-bottom: 8px;
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .upload-box p {
+            color: #64748b;
+            margin-bottom: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .small-btn {
+            background: #e2e8f0;
+            color: #0f172a;
+            margin-left: 10px;
+        }
+
+        .small-btn:hover {
+            background: #cbd5e1;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-status {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #06b6d4);
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 22px;
+        }
+
+        .stat {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .stat h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .stat p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .result-item label {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .result-item strong {
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        .preview {
+            margin-top: 24px;
+            background: linear-gradient(135deg, #eff6ff, #f0fdfa);
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid #dbeafe;
+        }
+
+        .preview h3 {
+            margin-bottom: 10px;
+            color: #0f172a;
+        }
+
+        .doc-sample {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: inset 0 0 0 1px #e2e8f0;
+            line-height: 1.7;
+            color: #334155;
+        }
+
+        .doc-sample .highlight {
+            background: #dbeafe;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .footer-note {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        @media (max-width: 992px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">DocIntel</div>
+            <nav class="nav">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Invoices</a>
+                <a href="#">Receipts</a>
+                <a href="#">Contracts</a>
+                <a href="#">Reports</a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <div>
+                    <h1>Document Intelligence</h1>
+                    <p>Upload, extract, and analyze documents with smart automation.</p>
+                </div>
+                <div class="user-chip">AI Document Processor</div>
+            </div>
+
+            <div class="grid">
+                <section class="card">
+                    <div id="dropZone" class="upload-box">
+                        <h2>Upload Your Document</h2>
+                        <p>Drag and drop a PDF, invoice, or receipt here</p>
+                        <label for="fileInput" class="btn">Choose File</label>
+                        <button class="btn small-btn" id="demoBtn">Load Demo</button>
+                        <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" />
+                        <div class="upload-status">
+                            <span id="statusText">No file selected</span>
+                            <div class="progress-bar">
+                                <div class="progress" id="progressBar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats">
+                        <div class="stat">
+                            <h3>Documents Processed</h3>
+                            <p id="docsCount">128</p>
+                        </div>
+                        <div class="stat">
+                            <h3>Accuracy</h3>
+                            <p id="accuracy">98%</p>
+                        </div>
+                        <div class="stat">
+                            <h3>Pending</h3>
+                            <p id="pending">12</p>
+                        </div>
+                    </div>
+
+                    <div class="preview">
+                        <h3>Preview</h3>
+                        <div class="doc-sample" id="docPreview">
+                            Invoice No: <span class="highlight">INV-2048</span><br />
+                            Vendor: <span class="highlight">TechNova Pvt Ltd</span><br />
+                            Date: <span class="highlight">13 May 2026</span><br />
+                            Total Amount: <span class="highlight">₹24,500</span><br />
+                            Tax: <span class="highlight">₹3,510</span>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="card">
+                    <h2 style="margin-bottom: 16px;">Extracted Data</h2>
+                    <div class="results" id="results">
+                        <div class="result-item">
+                            <label>Invoice Number</label>
+                            <strong>INV-2048</strong>
+                        </div>
+                        <div class="result-item">
+                            <label>Vendor Name</label>
+                            <strong>TechNova Pvt Ltd</strong>
+                        </div>
+                        <div class="result-item">
+                            <label>Invoice Date</label>
+                            <strong>13 May 2026</strong>
+                        </div>
+                        <div class="result-item">
+                            <label>Subtotal</label>
+                            <strong>₹20,990</strong>
+                        </div>
+                        <div class="result-item">
+                            <label>Tax Amount</label>
+                            <strong>₹3,510</strong>
+                        </div>
+                        <div class="result-item">
+                            <label>Total Payable</label>
+                            <strong>₹24,500</strong>
+                        </div>
+                    </div>
+                    <p class="footer-note">Smart extraction powered by OCR and document analysis.</p>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById("fileInput");
+        const dropZone = document.getElementById("dropZone");
+        const statusText = document.getElementById("statusText");
+        const progressBar = document.getElementById("progressBar");
+        const demoBtn = document.getElementById("demoBtn");
+        const docPreview = document.getElementById("docPreview");
+        const results = document.getElementById("results");
+
+        const demoData = {
+            preview: `
+        Invoice No: <span class="highlight">INV-8891</span><br />
+        Vendor: <span class="highlight">Azure Solutions</span><br />
+        Date: <span class="highlight">13 May 2026</span><br />
+        Total Amount: <span class="highlight">₹18,900</span><br />
+        Tax: <span class="highlight">₹2,880</span>
+      `,
+            fields: [
+                ["Invoice Number", "INV-8891"],
+                ["Vendor Name", "Azure Solutions"],
+                ["Invoice Date", "13 May 2026"],
+                ["Subtotal", "₹16,020"],
+                ["Tax Amount", "₹2,880"],
+                ["Total Payable", "₹18,900"],
+            ]
+        };
+
+        function updateResults(data) {
+            docPreview.innerHTML = data.preview;
+            results.innerHTML = data.fields
+                .map(
+                    ([label, value]) => `
+            <div class="result-item">
+              <label>${label}</label>
+              <strong>${value}</strong>
+            </div>
+          `
+                )
+                .join("");
+        }
+
+        function simulateUpload(fileName) {
+            let progress = 0;
+            statusText.textContent = `Processing ${fileName}...`;
+            progressBar.style.width = "0%";
+
+            const timer = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + "%";
+
+                if (progress >= 100) {
+                    clearInterval(timer);
+                    statusText.textContent = `Completed: ${fileName}`;
+                    updateResults(demoData);
+                }
+            }, 180);
+        }
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                simulateUpload(fileInput.files[0].name);
+            }
+        });
+
+        demoBtn.addEventListener("click", () => {
+            simulateUpload("demo-invoice.pdf");
+        });
+
+        dropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.classList.add("dragover");
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("dragover");
+        });
+
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.classList.remove("dragover");
+
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                simulateUpload(file.name);
+            }
+        });
+    </script>
+</body>
+
+</html>
